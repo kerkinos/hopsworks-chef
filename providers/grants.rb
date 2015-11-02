@@ -34,9 +34,10 @@ notifying_action :insert_rows do
     user "root"
     code <<-EOF
       set -e
-      #{exec} hopsworks -e \"source #{new_resource.rows_path}\"
+      #{exec} hopsworks -e \"set foreign_key_checks=0; source #{new_resource.rows_path}\"
       #{exec} glassfish_timers -e \"source #{timerTablePath}"
     EOF
+    not_if "#{exec} hopsworks < \"select email from users;\" | grep admin"
   end
 end
 
